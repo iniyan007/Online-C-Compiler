@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Compiler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.9/mode/clike/clike.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .CodeMirror { border: 1px solid #ccc; height: 200px; }
+        button { padding: 10px 20px; margin-top: 10px; }
+        pre { background-color: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Online C Compiler</h1>
+    <form id="c-code-form">
+        <textarea id="code-input" placeholder="Enter your C code here"></textarea>
+        <button type="button" onclick="submitCode()">Compile and Run</button>
+    </form>
+
+    <h3>Output:</h3>
+    <pre id="output"></pre>
+
+    <script>
+        const editor = CodeMirror.fromTextArea(document.getElementById('code-input'), {
+            lineNumbers: true,
+            mode: "text/x-csrc",
+            theme: "default"
+        });
+
+        function submitCode() {
+            const code = editor.getValue();
+            fetch('/compile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Displaying the output or error
+                document.getElementById('output').textContent = data.output || data.error;
+            })
+            .catch(err => {
+                document.getElementById('output').textContent = "Error: " + err.message;
+            });
+        }
+    </script>
+
+</body>
+</html>
